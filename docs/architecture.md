@@ -97,12 +97,21 @@ Solo5 introduces the concept of an _application manifest_, which is defined by
 the developer at unikernel build time, using the following JSON format and
 customarily named `manifest.json`:
 
-```jsonc
+```json
 {
   "type": "solo5.manifest",
   "version": 1,
   "devices": [
     { "name": "NAME", "type": "TYPE" }
+    {
+      "name": "NAME",
+      "type": "PCI_BASIC",
+      "class": 0x2,
+      "subclass": 0x0,
+      "progif": 0x0,
+      "vendor": 0x8086,
+      "dma": 8388608
+    }
     // ... up to 63 user-specified devices ...
   ]
 }
@@ -115,8 +124,19 @@ of the device, eg. `frontend` for a network or `storage` for a block device.
 _NAME_ must be composed of alphanumeric characters only, and within 1..67
 characters in length.
 
-_TYPE_ is the type of device being declared, currently `BLOCK_BASIC` or
-`NET_BASIC`.
+_TYPE_ is the type of device being declared, currently `BLOCK_BASIC`,
+`NET_BASIC`, `PCI_BASIC` or `DMA_BASIC`.
+
+`PCI_BASIC` contains additional fields besides `name` and `type`:
+* `class` - PCI device's expected class code
+* `subclass` - PCI device's expected subclass code
+* `progif` - PCI device's expected programming interface
+* `vendor` - PCI device's expected vendor
+* `dma_size` - amount of DMA-ready memory required for this device in bytes (at
+  least 4096 bytes)
+
+`DMA_BASIC` contains an additional field besides `name` and `type`:
+* `dma_size` - amount of additional DMA-ready memory available under this name
 
 Note that there is a maximum limit of 63 user-specified devices in the manifest.
 
